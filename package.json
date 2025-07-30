@@ -1,0 +1,19 @@
+{
+  "name": "glustack-ui-v2-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Gluestack UI v2 component registry",
+  "main": "server.ts",
+  "scripts": {
+    "dev": "ts-node-dev --respawn server.ts",
+    "start": "node dist/server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.3.0"
+  }
+}
