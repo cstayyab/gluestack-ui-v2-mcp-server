@@ -1,0 +1,300 @@
+---
+title: Components/FormControl
+component: FormControl
+group: Form Elements
+version: 1.0.0
+status: stable
+author: CSTayyab
+tags:
+  - form
+  - input
+  - validation
+  - accessibility
+  - gluestack-ui
+  - react-native
+  - nativewind
+description: >
+  A context-aware form wrapper providing consistent layout and style for form field groups, labels, helper messages, and error indicators using Gluestack UI + NativeWind.
+parameters:
+  layout: padded
+  controls:
+    expanded: true
+---
+
+import { Meta, Story, Canvas, ArgsTable } from '@storybook/addon-docs';
+import React from 'react';
+import { View, Text } from 'react-native';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlLabelAstrick,
+  FormControlHelper,
+  FormControlHelperText,
+} from './FormControl';
+
+<Meta title="Components/FormControl" component={FormControl} />
+
+# FormControl
+
+The `FormControl` component is a foundational layout utility that provides consistent spacing, structure, and contextual styling to a group of form-related elements. It is typically used to wrap input fields and their associated labels, helper messages, and error indicators.
+
+It supports styling variants using `@gluestack-ui/nativewind-utils` and is composed using `@gluestack-ui/form-control`. Each subcomponent plays a specific role:
+
+- `FormControlLabel` wraps label-related content.
+- `FormControlLabelText` displays the field name.
+- `FormControlLabelAstrick` indicates required fields.
+- `FormControlHelper` displays optional guidance.
+- `FormControlHelperText` is the styled helper message.
+- `FormControlError` displays validation errors.
+- `FormControlErrorText` is styled error text.
+- `FormControlErrorIcon` renders an error icon.
+
+Each of these components is context-aware, inheriting the `size` prop from the parent FormControl, and styled using Tailwind-based utility classes managed through `tva()`.
+
+---
+
+## Usage
+
+<Canvas>
+  <Story name="Default">
+    {() => (
+      <FormControl size="md">
+        <FormControlLabel>
+          <FormControlLabelText>Email</FormControlLabelText>
+          <FormControlLabelAstrick>*</FormControlLabelAstrick>
+        </FormControlLabel>
+        <View className="border border-border-300 rounded-md h-10 px-3 justify-center">
+          <Text>email@example.com</Text>
+        </View>
+        <FormControlHelper>
+          <FormControlHelperText size="sm">We'll never share your email.</FormControlHelperText>
+        </FormControlHelper>
+      </FormControl>
+    )}
+  </Story>
+</Canvas>
+
+This example renders a labeled field with helper text and required indicator. All subcomponents adjust their size and spacing according to the `FormControl` context.
+
+---
+
+## Error State
+
+<Canvas>
+  <Story name="With Error">
+    {() => (
+      <FormControl size="md">
+        <FormControlLabel>
+          <FormControlLabelText>Password</FormControlLabelText>
+        </FormControlLabel>
+        <View className="border border-error-700 rounded-md h-10 px-3 justify-center">
+          <Text>••••••••</Text>
+        </View>
+        <FormControlError>
+          <FormControlErrorIcon size="sm" />
+          <FormControlErrorText size="sm">Password is required.</FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+    )}
+  </Story>
+</Canvas>
+
+In error state, use `FormControlError`, `FormControlErrorText`, and optionally `FormControlErrorIcon` to communicate issues with the input. These components automatically use `text-error-700` and size-based utility classes.
+
+---
+
+## All Style Variants
+
+`LabelText`, `HelperText`, and `ErrorText` support extensive variant props to style typography:
+
+<Canvas>
+  <Story name="LabelText Variants">
+    {() => (
+      <>
+        <FormControl size="md">
+          <FormControlLabel>
+            <FormControlLabelText bold underline size="lg">Bold Underlined Label</FormControlLabelText>
+          </FormControlLabel>
+        </FormControl>
+
+        <FormControl size="md">
+          <FormControlLabel>
+            <FormControlLabelText italic strikeThrough size="md">Italic Strikethrough Label</FormControlLabelText>
+          </FormControlLabel>
+        </FormControl>
+
+        <FormControl size="md">
+          <FormControlLabel>
+            <FormControlLabelText highlight size="xl">Highlighted Label</FormControlLabelText>
+          </FormControlLabel>
+        </FormControl>
+      </>
+    )}
+  </Story>
+</Canvas>
+
+<Canvas>
+  <Story name="HelperText Variants">
+    {() => (
+      <>
+        <FormControl size="md">
+          <FormControlHelper>
+            <FormControlHelperText bold size="sm">Bold helper text</FormControlHelperText>
+          </FormControlHelper>
+        </FormControl>
+
+        <FormControl size="md">
+          <FormControlHelper>
+            <FormControlHelperText italic underline strikeThrough size="md">Decorated helper text</FormControlHelperText>
+          </FormControlHelper>
+        </FormControl>
+      </>
+    )}
+  </Story>
+</Canvas>
+
+<Canvas>
+  <Story name="ErrorText Variants">
+    {() => (
+      <>
+        <FormControl size="md">
+          <FormControlError>
+            <FormControlErrorText size="sm" bold underline>Bold Error</FormControlErrorText>
+          </FormControlError>
+        </FormControl>
+
+        <FormControl size="md">
+          <FormControlError>
+            <FormControlErrorText size="md" italic strikeThrough>Italic Strikethrough Error</FormControlErrorText>
+          </FormControlError>
+        </FormControl>
+      </>
+    )}
+  </Story>
+</Canvas>
+
+---
+
+## Components
+
+### FormControl
+Wraps and provides context (`size`) to all child elements. Applies spacing and layout styling.
+
+### FormControlLabel
+Used to render label container. Typically wraps `FormControlLabelText` and `FormControlLabelAstrick`.
+
+### FormControlLabelText
+Accepts:
+- `size`: Typography scale from `2xs` to `6xl`
+- `bold`, `italic`, `underline`, `strikeThrough`, `highlight`
+- `isTruncated`, `sub`
+
+### FormControlLabelAstrick
+Same props as `LabelText`. Generally used to indicate required fields (`*`).
+
+### FormControlHelper
+Used as container for helper text.
+
+### FormControlHelperText
+Same props as `LabelText`. Used for guiding or descriptive text below the field.
+
+### FormControlError
+Container for error state. Can include icon and error text.
+
+### FormControlErrorText
+Same props as `LabelText`. Used to render validation messages in red.
+
+### FormControlErrorIcon
+Icon component sized with `size` prop (`2xs` to `xl`) or with `height` / `width` directly.
+
+---
+
+## Props
+
+<ArgsTable story="Default" />
+
+## Styling Variants
+
+- `size`: `sm` | `md` | `lg` (on root FormControl)
+- `bold`, `underline`, `strikeThrough`, `italic`, `highlight`: boolean text modifiers
+- `isTruncated`: applies `truncate` in web environments
+- `sub`: renders subscript text style
+
+---
+
+## Best Practices
+
+- Always wrap `LabelText`, `HelperText`, and `ErrorText` with their respective container components.
+- Pass `size` to `FormControl`, and all nested components will auto-inherit it.
+- Avoid manually applying classNames. Use `size` and other variants for consistent styling.
+- For required fields, use both `FormControlLabelAstrick` and custom validation logic.
+
+---
+
+## Integration with Zod & React Hook Form
+
+This is the recommended integration pattern for using `FormControl` in real-world apps with `react-hook-form` and `zod` validation:
+
+```tsx
+const schema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+});
+
+export default function ExampleForm() {
+  const { control, handleSubmit } = useForm({
+    defaultValues: { email: '' },
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data) => console.log(data);
+
+  return (
+    <VStack space="md">
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value }, fieldState: { error } }) => (
+          <FormControl size="md">
+            <FormControlLabel>
+              <FormControlLabelText>Email</FormControlLabelText>
+              <FormControlLabelAstrick>*</FormControlLabelAstrick>
+            </FormControlLabel>
+
+            <VStack
+              className={`border rounded-md px-3 h-10 justify-center ${error ? 'border-error-700' : 'border-border-300'}`}
+            >
+              <TextInput
+                className="text-sm text-typography-900"
+                value={value}
+                onChangeText={onChange}
+                placeholder="Enter your email"
+              />
+            </VStack>
+
+            {error ? (
+              <FormControlError>
+                <HStack space="sm" alignItems="center">
+                  <FormControlErrorIcon size="sm" />
+                  <FormControlErrorText size="sm">{error.message}</FormControlErrorText>
+                </HStack>
+              </FormControlError>
+            ) : (
+              <FormControlHelper>
+                <FormControlHelperText size="sm">We'll never share your email.</FormControlHelperText>
+              </FormControlHelper>
+            )}
+          </FormControl>
+        )}
+      />
+
+      <VStack className="mt-4">
+        <Text onPress={handleSubmit(onSubmit)} className="text-primary-600 font-bold">Submit</Text>
+      </VStack>
+    </VStack>
+  );
+}
+```

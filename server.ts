@@ -3,7 +3,7 @@ import path from 'path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
-import { getComponentUsage, getGluestackComponentsList, pascalToKebabCase } from './helpers';
+import { getChildComponentList, getComponentUsage, getGluestackComponentsList, pascalToKebabCase } from './helpers';
 
 type ComponentFile = {
   path: string;
@@ -30,15 +30,19 @@ export async function createServer() {
   );
 
   server.registerTool(
-    'list_components',
+    'list_gluestack_components',
     {
-      description: 'List all available Gluestack UI v2 components',
+      description: 'List all available Gluestack UI v2 components and child components which should only be used as children of the main components.',
       inputSchema: {},
-      outputSchema: { components: z.array(z.string()) }
+      outputSchema: {
+        components: z.array(z.string()), child_components: z.record(z.string())
+      },
     },
     async () => {
+      const components = await getGluestackComponentsList();
       const structuredContent = {
-        components: await getGluestackComponentsList()
+        components,
+        child_components: components.map((c) => getChildComponentList(c))
       }
       return {
         content: [
@@ -52,7 +56,7 @@ export async function createServer() {
   );
 
   server.registerTool(
-    'get_component_code',
+    'get_gluestack_component_code',
     {
       description: 'Get all source files for a Gluestack UI v2 component',
       inputSchema: { componentName: z.string() },
@@ -102,7 +106,7 @@ export async function createServer() {
   );
 
   server.registerTool(
-    'get_component_usage',
+    'get_gluestack_component_usage',
     {
       description: 'Get markdown usage (with YAML frontmatter) for a component',
       inputSchema: { componentName: z.string() },
@@ -111,8 +115,9 @@ export async function createServer() {
     async ({ componentName }) => {
       const componentList = await getGluestackComponentsList();
       const componentPath = path.join(componentsDir, componentName);
+      const customUsageFile = path.join(componentPath, 'usage.mdx');
       if (componentList.includes(componentName)) {
-        const structuredContent = { usage: await getComponentUsage(componentName) }
+        const structuredContent = { usage: fs.existsSync(customUsageFile) ? fs.readFileSync(customUsageFile) : await getComponentUsage(componentName) }
         return {
           content: [
             {

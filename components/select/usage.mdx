@@ -1,0 +1,171 @@
+---
+title: gluestack-ui Select Component | Select React Native Installation, Usage & API
+component: Select
+group: Form Elements
+version: 1.0.0
+status: stable
+author: CSTayyab
+tags:
+  - select
+  - form
+  - dropdown
+  - actionsheet
+  - react-native
+  - gluestack-ui
+  - nativewind
+description: >
+  Enhance your React Native app with a customizable Select dropdown component. Supports accessibility, animations, and flexible styling for a smooth user experience.
+parameters:
+  layout: padded
+  controls:
+    expanded: true
+---
+
+import { Meta } from '@storybook/addon-docs';
+<Meta title="with-nativewind/Components/Forms/Select" />
+
+import {
+  Select,
+  SelectTrigger,
+  SelectInput,
+  SelectIcon,
+  SelectItem,
+  SelectContent,
+  SelectPortal,
+  SelectBackdrop,
+  SelectDragIndicator,
+  SelectDragIndicatorWrapper,
+  FormControl,
+  FormControlLabel,
+  FormControlLabelText,
+  FormControlHelper,
+  FormControlHelperText,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React from 'react';
+import { Text } from 'react-native';
+import { VStack, HStack, Box } from '@/components/ui';
+
+# Select
+
+The `Select` component is a Gluestack UI-compliant, NativeWind-enabled dropdown selector for React Native and Web. It is built atop an `Actionsheet` base on mobile for native feel and offers extensive props, slot components, and form integration.
+
+## Basic Anatomy
+
+Always use `SelectPortal` when rendering `SelectContent`. This prevents layout issues like unclickable screens or disappearing components caused by `Backdrop` stacking improperly.
+
+```tsx
+<Select>
+  <SelectTrigger>
+    <SelectInput placeholder="Choose..." />
+    <SelectIcon />
+  </SelectTrigger>
+  <SelectPortal>
+    <SelectBackdrop />
+    <SelectContent>
+      <SelectDragIndicatorWrapper>
+        <SelectDragIndicator />
+      </SelectDragIndicatorWrapper>
+      <SelectItem label="Option A" value="a" />
+      <SelectItem label="Option B" value="b" />
+    </SelectContent>
+  </SelectPortal>
+</Select>
+```
+
+## Form Integration with React Hook Form and Zod
+
+```tsx
+const schema = z.object({
+  role: z.string().min(1, 'Role is required'),
+});
+
+export default function ControlledSelectForm() {
+  const { control, handleSubmit } = useForm({
+    defaultValues: { role: '' },
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data) => console.log(data);
+
+  return (
+    <VStack className="gap-4">
+      <FormControl size="md" isRequired isInvalid={!!control._formState.errors.role}>
+        <Controller
+          control={control}
+          name="role"
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <>
+              <FormControlLabel>
+                <FormControlLabelText>Role</FormControlLabelText>
+              </FormControlLabel>
+
+              <Select selectedValue={value} onValueChange={onChange}>
+                <SelectTrigger variant="outline">
+                  <SelectInput placeholder="Select your role" />
+                  <SelectIcon />
+                </SelectTrigger>
+                <SelectPortal>
+                  <SelectBackdrop />
+                  <SelectContent>
+                    <SelectDragIndicatorWrapper>
+                      <SelectDragIndicator />
+                    </SelectDragIndicatorWrapper>
+                    <SelectItem label="Developer" value="dev" />
+                    <SelectItem label="Designer" value="design" />
+                    <SelectItem label="PM" value="pm" />
+                  </SelectContent>
+                </SelectPortal>
+              </Select>
+
+              {error ? (
+                <FormControlError>
+                  <FormControlErrorIcon />
+                  <FormControlErrorText>{error.message}</FormControlErrorText>
+                </FormControlError>
+              ) : (
+                <FormControlHelper>
+                  <FormControlHelperText>This is your functional role.</FormControlHelperText>
+                </FormControlHelper>
+              )}
+            </>
+          )}
+        />
+      </FormControl>
+
+      <Text onPress={handleSubmit(onSubmit)} className="text-primary-700 font-bold">Submit</Text>
+    </VStack>
+  );
+}
+```
+
+## Props
+
+### Select
+- `isDisabled`: disables interaction.
+- `selectedValue`: controlled value.
+- `defaultValue`: uncontrolled default.
+- `onValueChange`: callback for selection.
+- `variant`: `outline` | `underlined` | `rounded`.
+- `size`: `sm` | `md` | `lg` | `xl`.
+
+### SelectTrigger, Input, Icon, etc.
+All inherit base RN props and context from parent Select.
+
+## Accessibility & Platform Behavior
+- Renders a native-feeling ActionSheet on Android/iOS.
+- Web behavior mimics native select.
+- Keyboard and screen reader compatible.
+
+## Features
+- ✅ Fully customizable trigger, icon, and list.
+- ✅ Works across Android, iOS, and Web.
+- ✅ Composable with other Gluestack UI + NativeWind components.
+- ✅ Fully accessible (ARIA + VoiceOver supported).
+
+---
