@@ -35,14 +35,19 @@ export async function createServer() {
       description: 'List all available Gluestack UI v2 components and child components which should only be used as children of the main components.',
       inputSchema: {},
       outputSchema: {
-        components: z.array(z.string()), child_components: z.record(z.string())
+        components: z.array(z.string()),
+        child_components: z.record(z.string(), z.array(z.string()))
       },
     },
     async () => {
       const components = await getGluestackComponentsList();
+      const child_components: Record<string, string[]> = {}
+      for (const component of components) {
+        child_components[component] = await getChildComponentList(component);
+      }
       const structuredContent = {
         components,
-        child_components: components.map((c) => getChildComponentList(c))
+        child_components
       }
       return {
         content: [
@@ -110,14 +115,16 @@ export async function createServer() {
     {
       description: 'Get markdown usage (with YAML frontmatter) for a component',
       inputSchema: { componentName: z.string() },
-      outputSchema: { usage: z.string() },
+      outputSchema: { usage: z.string(), code: z.string() },
     },
     async ({ componentName }) => {
       const componentList = await getGluestackComponentsList();
       const componentPath = path.join(componentsDir, componentName);
       const customUsageFile = path.join(componentPath, 'usage.mdx');
       if (componentList.includes(componentName)) {
-        const structuredContent = { usage: fs.existsSync(customUsageFile) ? fs.readFileSync(customUsageFile) : await getComponentUsage(componentName) }
+        const structuredContent = {
+          usage: fs.existsSync(customUsageFile) ? fs.readFileSync(customUsageFile).toString('utf-8') : await getComponentUsage(componentName) || 'No Usage found.',
+        }
         return {
           content: [
             {

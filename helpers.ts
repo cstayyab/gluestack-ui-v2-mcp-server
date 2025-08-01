@@ -21,10 +21,15 @@ async function getFoldersInGitHubDirectory(
 ): Promise<string[]> {
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`;
 
+  const headers: HeadersInit = {
+    'Accept': 'application/vnd.github.v3+json',
+  }
+  const token = process.env.GH_TOKEN;
+  if (token) {
+    headers['Authorization'] = `token ${token}`;
+  }
   const response = await fetch(apiUrl, {
-    headers: {
-      'Accept': 'application/vnd.github.v3+json',
-    },
+    headers,
   });
 
   if (!response.ok) {
@@ -42,13 +47,15 @@ async function getFoldersInGitHubDirectory(
 }
 
 export const getGluestackComponentsList = async () => {
-  const exclude = ['hooks', 'docs-components', 'AllComponents'];
+  const exclude = ['hooks', 'docs-components', 'AllComponents', 'BottomSheet', 'ImageViewer', 'PinInput'];
   const list = await getFoldersInGitHubDirectory(
     'gluestack',
     'gluestack-ui',
-    'example/storybook-nativewind/src/components'
+    'example/storybook-nativewind/src/components',
+    'patch'
   );
-  return list.filter((v) => exclude.includes(v) == false)
+  const excludedFiltered = list.filter((v) => exclude.includes(v) == false);
+  return excludedFiltered.filter((c) => fs.existsSync(path.join(componentsDir, pascalToKebabCase(c))))
 }
 
 export const getChildComponentList = async (componentName: string) => {
@@ -73,10 +80,14 @@ export const getComponentUsage = async (componentName: string) => {
 }
 
 export function pascalToKebabCase(input: string): string {
-  return input
+  const rv = input
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2') // Insert hyphen between lower/number and upper char
     .replace(/([A-Z])([A-Z][a-z])/g, '$1-$2') // Handle consecutive uppercase letters followed by lowercase letters
     .toLowerCase();
+  if (rv.split('-')[0].length == 1) { //special case for hstack and vstack
+    return rv.replace('-', '');
+  }
+  return rv
 }
 
 export const parseTSXForExportedMembers = (filePath: string) => {
